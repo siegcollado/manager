@@ -2,13 +2,7 @@ import React, { Component } from 'react';
 import { Text } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import {
-  Spinner,
-  Button,
-  Card,
-  CardSection,
-  Input
-} from './common';
+import { Spinner, Button, Card, CardSection, Input } from './common';
 import * as actions from '../actions';
 
 const styles = {

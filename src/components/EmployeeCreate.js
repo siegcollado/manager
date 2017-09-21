@@ -1,64 +1,32 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Picker, Text } from 'react-native';
 import { bindActionCreators } from 'redux';
-import {
-  Card,
-  CardSection,
-  Input,
-  Button
-} from './common';
+import { Card, CardSection, ButtonWithSpinner } from './common';
 import * as actions from '../actions/employeeActions';
-
-const styles = {
-  pickerTextStyle: {
-    fontSize: 18,
-    paddingLeft: 20
-  }
-};
+import { employee } from '../selectors';
+import EmployeeForm from './EmployeeForm';
 
 class EmployeeCreate extends Component {
-  render() {
-    const { name, shift, phoneNumber, employeeUpdate } = this.props;
+  componentWillMount() {
+    this.props.resetEmployeeFields();
+  }
 
+  handleSubmit = () => {
+    const { employee: { name, phone, shift }, createEmployee } = this.props;
+    createEmployee(name, phone, shift);
+  }
+
+  render() {
     return (
       <Card>
+        <EmployeeForm />
         <CardSection>
-          <Input
-            label='Name'
-            placeholder='Jane'
-            onChangeText={(value) => employeeUpdate('name', value)}
-            value={name}
-          />
-        </CardSection>
-        <CardSection>
-          <Input
-            label='Phone'
-            placeholder='555-555-5555'
-            onChangeText={(value) => employeeUpdate('phoneNumber', value)}
-            value={phoneNumber}
-          />
-        </CardSection>
-        <CardSection style={{ flexDirection: 'column' }}>
-          <Text style={styles.pickerTextStyle}>Shift</Text>
-          <Picker
-            style={{ flex: 1 }}
-            selectedValue={shift}
-            onValueChange={(value) => employeeUpdate('shift', value)}
+          <ButtonWithSpinner
+            onPress={this.handleSubmit}
+            showSpinner={this.props.submitting}
           >
-            <Picker.Item label='Sunday' value='Sunday' />
-            <Picker.Item label='Monday' value='Monday' />
-            <Picker.Item label='Tuesday' value='Tuesday' />
-            <Picker.Item label='Wednesday' value='Wednesday' />
-            <Picker.Item label='Thursday' value='Thursday' />
-            <Picker.Item label='Friday' value='Friday' />
-            <Picker.Item label='Saturday' value='Saturday' />
-          </Picker>
-        </CardSection>
-        <CardSection>
-          <Button>
             Create
-          </Button>
+          </ButtonWithSpinner>
         </CardSection>
       </Card>
     );
@@ -66,12 +34,12 @@ class EmployeeCreate extends Component {
 }
 
 export default connect(
-  ({ employeeForm: { name, phoneNumber, shift } }) => ({
-    name,
-    phoneNumber,
-    shift
+  (state) => ({
+    employee: employee(state),
+    submitting: state.submitting
   }),
   dispatch => bindActionCreators({
-    employeeUpdate: actions.employeeUpdate
+    createEmployee: actions.createEmployee,
+    resetEmployeeFields: actions.resetEmployeeFields
   }, dispatch)
 )(EmployeeCreate);

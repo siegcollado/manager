@@ -1,5 +1,4 @@
 import { createAction } from 'redux-actions';
-import firebase from 'firebase';
 import { Actions } from 'react-native-router-flux';
 
 export const emailChanged = createAction('EMAIL_CHANGED', email => ({ email }));
@@ -26,16 +25,17 @@ const dispatchSubmitFail = (dispatch) => {
   dispatch(setAuthError('Authentication failed'));
 };
 
-export const performLogin = (email, password) => (dispatch) => {
-  dispatch(setAuthSubmitting(true));
+export const performLogin = (email, password) =>
+  (dispatch, getState, { firebase }) => {
+    dispatch(setAuthSubmitting(true));
 
-  return firebase.auth()
-                 .signInWithEmailAndPassword(email, password)
-                 .then(user => dispatchSubmitSuccess(dispatch, user))
-                 .catch(() => {
-                   firebase.auth()
-                           .createUserWithEmailAndPassword(email, password)
-                           .then(user => dispatchSubmitSuccess(dispatch, user))
-                           .catch(() => dispatchSubmitFail(dispatch));
-                 });
+    return firebase.auth()
+                   .signInWithEmailAndPassword(email, password)
+                   .then(user => dispatchSubmitSuccess(dispatch, user))
+                   .catch(() => {
+                     firebase.auth()
+                             .createUserWithEmailAndPassword(email, password)
+                             .then(user => dispatchSubmitSuccess(dispatch, user))
+                             .catch(() => dispatchSubmitFail(dispatch));
+                   });
 };
