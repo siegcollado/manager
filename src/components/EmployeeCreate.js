@@ -1,20 +1,13 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { Card, CardSection, ButtonWithSpinner } from './common';
-import * as actions from '../actions/employeeActions';
-import { employee } from '../selectors';
 import EmployeeForm from './EmployeeForm';
 
-class EmployeeCreate extends Component {
+export default class EmployeeCreate extends Component {
   componentWillMount() {
     this.props.resetEmployeeFields();
   }
 
-  handleSubmit = () => {
-    const { employee: { name, phone, shift }, createEmployee } = this.props;
-    createEmployee(name, phone, shift);
-  }
+  handleSubmit = () => this.props.createEmployee();
 
   render() {
     return (
@@ -32,14 +25,3 @@ class EmployeeCreate extends Component {
     );
   }
 }
-
-export default connect(
-  (state) => ({
-    employee: employee(state),
-    submitting: state.submitting
-  }),
-  dispatch => bindActionCreators({
-    createEmployee: actions.createEmployee,
-    resetEmployeeFields: actions.resetEmployeeFields
-  }, dispatch)
-)(EmployeeCreate);

@@ -1,15 +1,10 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { ListView } from 'react-native';
-import { getEmployees } from '../actions';
-import * as selectors from '../selectors';
 import { Spinner } from './common';
 import ListItem from './ListItem';
 
-class EmployeeList extends Component {
+export default class EmployeeList extends Component {
   componentWillMount() {
-    this.props.getEmployees();
     this.createDataSource(this.props);
   }
 
@@ -17,12 +12,14 @@ class EmployeeList extends Component {
     this.createDataSource(nextProps);
   }
 
-  createDataSource({ employees }) {
+  createDataSource({ data }) {
     const ds = new ListView.DataSource({
       rowHasChanged: (r1, r2) => r1 !== r2
     });
 
-    this.dataSource = ds.cloneWithRows(employees);
+    if (data.user && data.user.employees) {
+      this.dataSource = ds.cloneWithRows(data.user.employees);
+    }
   }
 
   renderRow(employee) {
@@ -30,9 +27,9 @@ class EmployeeList extends Component {
   }
 
   render() {
-    const { fetching } = this.props;
+    const { data: { loading } } = this.props;
 
-    if (fetching) {
+    if (loading) {
       return <Spinner size="large" />;
     }
 
@@ -45,11 +42,3 @@ class EmployeeList extends Component {
     );
   }
 }
-
-export default connect(
-  (state) => ({
-    employees: selectors.employeeList(state),
-    fetching: selectors.fetching(state)
-  }),
-  dispatch => bindActionCreators({ getEmployees }, dispatch)
-)(EmployeeList);

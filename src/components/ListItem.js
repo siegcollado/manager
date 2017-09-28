@@ -10,9 +10,10 @@ const styles = {
   }
 };
 
-const ListItem = ({ uid, name, shift, phone }) => {
-  const handleRowPress = () =>
-    Actions.employeeEdit({ uid, name, shift, phone });
+const ListItem = ({ id, name, shift, phone }) => {
+  const handleRowPress = () => {
+    Actions.employeeEdit({ id, name, shift, phone });
+  };
 
   return (
     <TouchableWithoutFeedback

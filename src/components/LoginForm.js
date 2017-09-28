@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { Text } from 'react-native';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { Spinner, Button, Card, CardSection, Input } from './common';
-import * as actions from '../actions';
 
 const styles = {
   errorTextStyle: {
@@ -13,7 +10,8 @@ const styles = {
   }
 };
 
-class LoginForm extends Component {
+export default class LoginForm extends Component {
+
   handleSubmit() {
     const { email, password, performLogin } = this.props;
     performLogin(email, password);
@@ -32,7 +30,6 @@ class LoginForm extends Component {
       </Button>
     );
   }
-
 
   render() {
     const { error, email, password, emailChanged, passwordChanged } = this.props;
@@ -64,18 +61,3 @@ class LoginForm extends Component {
     );
   }
 }
-
-export default connect(
-  ({ auth: { email, password, submitting, error, user } }) => ({
-    email,
-    password,
-    submitting,
-    error,
-    user
-  }),
-  dispatch => bindActionCreators({
-    emailChanged: actions.emailChanged,
-    passwordChanged: actions.passwordChanged,
-    performLogin: actions.performLogin
-  }, dispatch)
-)(LoginForm);

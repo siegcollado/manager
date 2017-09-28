@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { View } from 'react-native';
 import { employee } from '../selectors';
 import { CardSection, Input, ModalPicker } from './common';
@@ -46,7 +45,5 @@ const EmployeeForm = ({ employee: { name, phone, shift }, updateEmployeeField })
 
 export default connect(
   (state) => ({ employee: employee(state) }),
-  dispatch => bindActionCreators({
-    updateEmployeeField: actions.updateEmployeeField
-  }, dispatch)
+  { updateEmployeeField: actions.updateEmployeeField }
 )(EmployeeForm);

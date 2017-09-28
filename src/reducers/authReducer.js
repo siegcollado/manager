@@ -12,7 +12,7 @@ const initialState = {
   password: '',
   submitting: false,
   error: null,
-  user: {}
+  token: null
 };
 
 export default handleActions({
@@ -24,9 +24,12 @@ export default handleActions({
     password: '',
     error
   }),
-  [setAuthSuccess]: (state, { payload: { user } }) => ({
+  [setAuthSuccess]: (state, { payload: { token } }) => ({
     ...state,
     ...initialState,
-    user
+    token
   })
 }, initialState);
+
+// Selectors
+export const getAuthToken = (state) => state.auth.token;

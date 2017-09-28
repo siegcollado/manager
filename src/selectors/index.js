@@ -1,6 +1,8 @@
 const employeeForm = (state) => state.employeeForm;
 const employees = (state) => state.employees;
 
+export const token = (state) => state.auth.token;
+
 export const submitting = (state) => employeeForm(state).submitting;
 
 export const employee = (state) => ({

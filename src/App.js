@@ -1,23 +1,40 @@
-import React, { Component } from 'react';
-import { Provider } from 'react-redux';
-import firebase from 'firebase';
-import createStore from './createStore';
-import reducers from './reducers';
-
-import config from './config/firebase.json';
-
+import React from 'react';
+import { ApolloProvider, ApolloClient, createNetworkInterface } from 'react-apollo';
+import { GRAPHQL_URL } from './config/endpoints';
 import Router from './Router';
+import configureStore from './configureStore';
 
-export default class App extends Component {
-  componentWillMount() {
-    firebase.initializeApp(config);
-  }
+const App = () => {
+  const getToken = () => store.getState().auth.token;
 
-  render() {
-    return (
-      <Provider store={createStore(reducers)}>
-        <Router />
-      </Provider>
-    );
-  }
-}
+  const networkInterface = createNetworkInterface({ uri: GRAPHQL_URL });
+
+  networkInterface.use([{
+    applyMiddleware(req, next) {
+      if (!req.options.headers) {
+        // eslint-disable-next-line no-param-reassign
+        req.options.headers = {};
+      }
+
+      const jwt = getToken();
+      if (jwt) {
+        // eslint-disable-next-line no-param-reassign
+        req.options.headers.authorization = `Bearer ${jwt}`;
+      }
+
+      next();
+    }
+  }]);
+
+  const client = new ApolloClient({ networkInterface });
+
+  const store = configureStore({ client });
+
+  return (
+    <ApolloProvider store={store} client={client}>
+      <Router />
+    </ApolloProvider>
+  );
+};
+
+export default App;

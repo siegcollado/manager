@@ -11,11 +11,11 @@ export const setAuthSubmitting = createAction(
 
 export const setAuthError = createAction('SET_AUTH_ERROR', error => ({ error }));
 
-export const setAuthSuccess = createAction('SET_AUTH_SUCCESS', user => ({ user }));
+export const setAuthSuccess = createAction('SET_AUTH_SUCCESS', token => ({ token }));
 
-const dispatchSubmitSuccess = (dispatch, user) => {
+const dispatchSubmitSuccess = (dispatch, token) => {
   dispatch(setAuthSubmitting(false));
-  dispatch(setAuthSuccess(user));
+  dispatch(setAuthSuccess(token));
 
   Actions.main();
 };
@@ -26,16 +26,16 @@ const dispatchSubmitFail = (dispatch) => {
 };
 
 export const performLogin = (email, password) =>
-  (dispatch, getState, { firebase }) => {
+  (dispatch, getState, { api }) => {
     dispatch(setAuthSubmitting(true));
 
-    return firebase.auth()
-                   .signInWithEmailAndPassword(email, password)
-                   .then(user => dispatchSubmitSuccess(dispatch, user))
-                   .catch(() => {
-                     firebase.auth()
-                             .createUserWithEmailAndPassword(email, password)
-                             .then(user => dispatchSubmitSuccess(dispatch, user))
-                             .catch(() => dispatchSubmitFail(dispatch));
-                   });
-};
+    // TODO: Save to AsyncStorage
+    return api.getToken(email, password)
+              .then(({ data: { auth_token } }) => {
+                dispatchSubmitSuccess(dispatch, auth_token);
+              })
+              .catch((error) => {
+                console.log(error);
+                dispatchSubmitFail(dispatch);
+              });
+  };
